@@ -26,7 +26,6 @@ public:
 //  void gaussSeidel(double **a, double *b, double *x, int n, int maxIterations, double tolerance);
   void solveRK4(double TIME,double dt);
   void mat_vec_multiply(double** a, double* x, double *result, int n);
-  void solve_rk_hERG(double** a, double* y, double dt, int n );
   double set_time_step(double TIME,
                        double time_point,
                        double min_time_step,
@@ -39,7 +38,6 @@ public:
                        double* ALGEBRAIC);
 private:
   void ___applyDrugEffect(double conc, const double *hill);
-  void ___applyHERGBinding(double conc, const double *herg);
   void ___initConsts(double type);
 };
 
