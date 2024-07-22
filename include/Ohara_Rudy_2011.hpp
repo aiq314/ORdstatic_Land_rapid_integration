@@ -4,6 +4,8 @@
 #include "Cellmodel.h"
 #include "enum_Ohara_Rudy_2011.hpp"
 
+#define EULER
+
 class Ohara_Rudy_2011 : public Cellmodel
 {
 public:
@@ -11,20 +13,34 @@ public:
   ~Ohara_Rudy_2011();
   void initConsts ();
   void initConsts(double type);
-	void initConsts(bool is_dutta);
-	void initConsts(double type, double bcl, double conc, double *ic50, bool is_dutta );
-  void computeRates();
-  void computeRates(double TIME, double *CONSTANTS, double *RATES, double *STATES, double *ALGEBRAIC);
-  void computeRates(double TIME, double *CONSTANTS, double *RATES, double *STATES, double *ALGEBRAIC, double land_trpn);
-  void solveAnalytical( double dt, double *CONSTANTS, double *RATES, double* STATES, double* ALGEBRAIC );
-  static double set_time_step(double TIME,double time_point,double max_time_step,
-      double* CONSTANTS,double* RATES,double* STATES,double* ALGEBRAIC);
-
+  void initConsts(double type, double conc, const double *hill, const double *herg );
+  void computeRates( double TIME, double *CONSTANTS, double *RATES, double *STATES, double *ALGEBRAIC );
+  void solveEuler(double dt);
+  double tryDt( double dt,
+               double TIME,
+               double *CONSTANTS,
+               double *RATES,
+               double* STATES,
+               double* ALGEBRAIC );
+  void gaussElimination(double *A, double *b, double *x, int N);
+//  void gaussSeidel(double **a, double *b, double *x, int n, int maxIterations, double tolerance);
+  void solveRK4(double TIME,double dt);
+  void mat_vec_multiply(double** a, double* x, double *result, int n);
+  void solve_rk_hERG(double** a, double* y, double dt, int n );
+  double set_time_step(double TIME,
+                       double time_point,
+                       double min_time_step,
+                       double max_time_step,
+                       double min_dV,
+                       double max_dV,
+                       double* CONSTANTS,
+                       double* RATES,
+                       double* STATES,
+                       double* ALGEBRAIC);
 private:
-	void ___applyDrugEffect(double conc, double *ic50);
-	void ___applyDutta();
-	void ___initConsts(double type, double bcl);
-
+  void ___applyDrugEffect(double conc, const double *hill);
+  void ___applyHERGBinding(double conc, const double *herg);
+  void ___initConsts(double type);
 };
 
 

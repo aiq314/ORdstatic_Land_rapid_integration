@@ -1,4 +1,3 @@
-// #include "ohara_rudy_cipa_v1_2017.hpp"
 #include "Ohara_Rudy_2011.hpp"
 #include "Land_2016.hpp"
 
@@ -76,7 +75,7 @@ int main(int argc, char* argv[]){
     std::string vmcheck_name;
     start = clock();
     p_elec = new Ohara_Rudy_2011();
-    p_elec->initConsts(params.celltype,conc,hill.hill); // drug effects
+    p_elec->initConsts(params.celltype,conc,hill.hill,herg.herg); // drug effects
     p_elec->CONSTANTS[BCL] = params.bcl;
     p_mech = new Land_2016();
     p_mech->initConsts(false, false);
