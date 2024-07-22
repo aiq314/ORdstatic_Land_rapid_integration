@@ -1,0 +1,9 @@
+bcl 2000 
+beats 1
+dtw 10.0
+time_point 25
+min_dt 0.1
+max_dt 2.0 
+drug_name bepridil
+conc 33,66,99,132
+cai_scaling 1
