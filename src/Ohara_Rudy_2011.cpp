@@ -558,6 +558,7 @@ void Ohara_Rudy_2011::initConsts(double type, double conc, const double *hill, c
 {
   ___initConsts(type);
   std::cout << "Celltype: " << CONSTANTS[celltype] << std::endl;
+  ___applyDutta();
   std::cout << "Control Hill inhibition " << CONSTANTS[PCa] << " " << CONSTANTS[GK1] << " " << CONSTANTS[GKs] << " " << CONSTANTS[GNaL] << " " << CONSTANTS[GNa] << " " << CONSTANTS[Gto] <<std::endl;
   ___applyDrugEffect(conc, hill);
   std::cout << "After drug " << CONSTANTS[PCa] << " " << CONSTANTS[GK1] << " " << CONSTANTS[GKs] << " " << CONSTANTS[GNaL] << " " << CONSTANTS[GNa] << " " << CONSTANTS[Gto] << std::endl;
@@ -1004,7 +1005,6 @@ void Ohara_Rudy_2011::solveEuler(double dt){
   }
 }
 
-
 void Ohara_Rudy_2011::gaussElimination(double *A, double *b, double *x, int N) {
         // Using A as a flat array to represent an N x N matrix
     for (int i = 0; i < N; i++) {
@@ -1126,14 +1126,29 @@ double Ohara_Rudy_2011::set_time_step(double TIME,
 
 void Ohara_Rudy_2011::___applyDrugEffect(double conc, const double *hill)
 {
+// CONSTANTS[GK1] = CONSTANTS[GK1] * ((hill[2] > 10E-14 && hill[3] > 10E-14) ? 1./(1.+pow(conc/hill[2],hill[3])) : 1.);
+// CONSTANTS[GKs] = CONSTANTS[GKs] * ((hill[4] > 10E-14 && hill[5] > 10E-14) ? 1./(1.+pow(conc/hill[4],hill[5])) : 1.);
+// CONSTANTS[GNaL] = CONSTANTS[GNaL] * ((hill[8] > 10E-14 && hill[9] > 10E-14) ? 1./(1.+pow(conc/hill[8],hill[9])) : 1.);
+// CONSTANTS[GNa] = CONSTANTS[GNa] * ((hill[6] > 10E-14 && hill[7] > 10E-14) ? 1./(1.+pow(conc/hill[6],hill[7])) : 1.);
+// CONSTANTS[Gto] = CONSTANTS[Gto] * ((hill[10] > 10E-14 && hill[11] > 10E-14) ? 1./(1.+pow(conc/hill[10],hill[11])) : 1.);
+// CONSTANTS[PCa] = CONSTANTS[PCa] * ( (hill[0] > 10E-14 && hill[1] > 10E-14) ? 1./(1.+pow(conc/hill[0],hill[1])) : 1.);
 CONSTANTS[GK1] = CONSTANTS[GK1] * ((hill[2] > 10E-14 && hill[3] > 10E-14) ? 1./(1.+pow(conc/hill[2],hill[3])) : 1.);
+CONSTANTS[GKr] = CONSTANTS[GKr] * ((hill[12] > 10E-14 && hill[13] > 10E-14) ? 1./(1.+pow(conc/hill[12],hill[13])) : 1.);
 CONSTANTS[GKs] = CONSTANTS[GKs] * ((hill[4] > 10E-14 && hill[5] > 10E-14) ? 1./(1.+pow(conc/hill[4],hill[5])) : 1.);
 CONSTANTS[GNaL] = CONSTANTS[GNaL] * ((hill[8] > 10E-14 && hill[9] > 10E-14) ? 1./(1.+pow(conc/hill[8],hill[9])) : 1.);
 CONSTANTS[GNa] = CONSTANTS[GNa] * ((hill[6] > 10E-14 && hill[7] > 10E-14) ? 1./(1.+pow(conc/hill[6],hill[7])) : 1.);
 CONSTANTS[Gto] = CONSTANTS[Gto] * ((hill[10] > 10E-14 && hill[11] > 10E-14) ? 1./(1.+pow(conc/hill[10],hill[11])) : 1.);
 CONSTANTS[PCa] = CONSTANTS[PCa] * ( (hill[0] > 10E-14 && hill[1] > 10E-14) ? 1./(1.+pow(conc/hill[0],hill[1])) : 1.);
-}
 
+}
+void Ohara_Rudy_2011::___applyDutta()
+{
+CONSTANTS[GKs] *= 1.870;
+CONSTANTS[GKr] *= 1.013;
+CONSTANTS[GK1] *= 1.698;
+CONSTANTS[PCa] *= 1.007;
+CONSTANTS[GNaL] *= 2.661;
+}
 void Ohara_Rudy_2011::mat_vec_multiply(double** a, double* x, double *result, int n) {
     for (int i = 0; i < n; i++) {
         result[i] = 0.0;

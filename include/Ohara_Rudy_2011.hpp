@@ -37,6 +37,7 @@ public:
                        double* STATES,
                        double* ALGEBRAIC);
 private:
+  void ___applyDutta();
   void ___applyDrugEffect(double conc, const double *hill);
   void ___initConsts(double type);
 };
