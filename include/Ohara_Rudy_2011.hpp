@@ -22,10 +22,7 @@ public:
                double *RATES,
                double* STATES,
                double* ALGEBRAIC );
-  void gaussElimination(double *A, double *b, double *x, int N);
-//  void gaussSeidel(double **a, double *b, double *x, int n, int maxIterations, double tolerance);
   void solveRK4(double TIME,double dt);
-  void mat_vec_multiply(double** a, double* x, double *result, int n);
   double set_time_step(double TIME,
                        double time_point,
                        double min_time_step,

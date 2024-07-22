@@ -9,14 +9,6 @@
 #include <cstdlib>
 #include <iostream>
 
-// #include <Eigen/Dense>
-// #include <Eigen/Eigenvalues>
-
-// using Eigen::MatrixXd;
-// using Eigen::MatrixXcd;
-// using Eigen::VectorXcd;
-// using Eigen::EigenSolver;
-
 /*
  * TIME is time in component environment (millisecond).
  * CONSTANTS[celltype] is celltype in component environment (dimensionless).
@@ -38,10 +30,9 @@
  * CONSTANTS[vnsr] is vnsr in component cell_geometry (microliter).
  * CONSTANTS[vjsr] is vjsr in component cell_geometry (microliter).
  * CONSTANTS[vss] is vss in component cell_geometry (microliter).
- * STATES[V] is v in component membrane (millivolt).
+ * STATES[v] is v in component membrane (millivolt).
+ * ALGEBRAIC[vffrt] is vffrt in component membrane (coulomb_per_mole).
  * ALGEBRAIC[vfrt] is vfrt in component membrane (dimensionless).
- * CONSTANTS[ffrt] is ffrt in component membrane (coulomb_per_mole_millivolt).
- * CONSTANTS[frt] is frt in component membrane (per_millivolt).
  * ALGEBRAIC[INa] is INa in component INa (microA_per_microF).
  * ALGEBRAIC[INaL] is INaL in component INaL (microA_per_microF).
  * ALGEBRAIC[Ito] is Ito in component Ito (microA_per_microF).
@@ -59,10 +50,7 @@
  * ALGEBRAIC[IpCa] is IpCa in component IpCa (microA_per_microF).
  * ALGEBRAIC[ICab] is ICab in component ICab (microA_per_microF).
  * ALGEBRAIC[Istim] is Istim in component membrane (microA_per_microF).
- * CONSTANTS[stim_start] is stim_start in component membrane (millisecond).
- * CONSTANTS[stim_end] is stim_end in component membrane (millisecond).
  * CONSTANTS[amp] is amp in component membrane (microA_per_microF).
- * CONSTANTS[BCL] is BCL in component membrane (millisecond).
  * CONSTANTS[duration] is duration in component membrane (millisecond).
  * CONSTANTS[KmCaMK] is KmCaMK in component CaMK (millimolar).
  * CONSTANTS[aCaMK] is aCaMK in component CaMK (per_millimolar_per_millisecond).
@@ -127,7 +115,6 @@
  * STATES[hs] is hs in component INa (dimensionless).
  * ALGEBRAIC[h] is h in component INa (dimensionless).
  * CONSTANTS[GNa] is GNa in component INa (milliS_per_microF).
- * CONSTANTS[shift_INa_inact] is shift_INa_inact in component INa (millivolt).
  * ALGEBRAIC[jss] is jss in component INa (dimensionless).
  * ALGEBRAIC[tj] is tj in component INa (millisecond).
  * STATES[j] is j in component INa (dimensionless).
@@ -219,83 +206,22 @@
  * CONSTANTS[tjca] is tjca in component ICaL (millisecond).
  * ALGEBRAIC[tffp] is tffp in component ICaL (millisecond).
  * ALGEBRAIC[tfcafp] is tfcafp in component ICaL (millisecond).
- * CONSTANTS[v0_CaL] is v0 in component ICaL (millivolt).
- * ALGEBRAIC[A_1] is A_1 in component ICaL (dimensionless).
- * CONSTANTS[B_1] is B_1 in component ICaL (per_millivolt).
- * ALGEBRAIC[U_1] is U_1 in component ICaL (dimensionless).
- * ALGEBRAIC[A_2] is A_2 in component ICaL (dimensionless).
- * CONSTANTS[B_2] is B_2 in component ICaL (per_millivolt).
- * ALGEBRAIC[U_2] is U_2 in component ICaL (dimensionless).
- * ALGEBRAIC[A_3] is A_3 in component ICaL (dimensionless).
- * CONSTANTS[B_3] is B_3 in component ICaL (per_millivolt).
- * ALGEBRAIC[U_3] is U_3 in component ICaL (dimensionless).
  * CONSTANTS[GKr_b] is GKr_b in component IKr (milliS_per_microF).
- * STATES[IC1] is IC1 in component IKr (dimensionless).
- * STATES[IC2] is IC2 in component IKr (dimensionless).
- * STATES[C1] is C1 in component IKr (dimensionless).
- * STATES[C2] is C2 in component IKr (dimensionless).
- * STATES[O] is O in component IKr (dimensionless).
- * STATES[IO] is IO in component IKr (dimensionless).
- * STATES[IObound] is IObound in component IKr (dimensionless).
- * STATES[Obound] is Obound in component IKr (dimensionless).
- * STATES[Cbound] is Cbound in component IKr (dimensionless).
- * STATES[D] is D in component IKr (dimensionless).
  * CONSTANTS[GKr] is GKr in component IKr (milliS_per_microF).
- * CONSTANTS[A1] is A1 in component IKr (per_millisecond).
- * CONSTANTS[B1] is B1 in component IKr (per_millivolt).
- * CONSTANTS[q1] is q1 in component IKr (dimensionless).
- * CONSTANTS[A2] is A2 in component IKr (per_millisecond).
- * CONSTANTS[B2] is B2 in component IKr (per_millivolt).
- * CONSTANTS[q2] is q2 in component IKr (dimensionless).
- * CONSTANTS[A3] is A3 in component IKr (per_millisecond).
- * CONSTANTS[B3] is B3 in component IKr (per_millivolt).
- * CONSTANTS[q3] is q3 in component IKr (dimensionless).
- * CONSTANTS[A4] is A4 in component IKr (per_millisecond).
- * CONSTANTS[B4] is B4 in component IKr (per_millivolt).
- * CONSTANTS[q4] is q4 in component IKr (dimensionless).
- * CONSTANTS[A11] is A11 in component IKr (per_millisecond).
- * CONSTANTS[B11] is B11 in component IKr (per_millivolt).
- * CONSTANTS[q11] is q11 in component IKr (dimensionless).
- * CONSTANTS[A21] is A21 in component IKr (per_millisecond).
- * CONSTANTS[B21] is B21 in component IKr (per_millivolt).
- * CONSTANTS[q21] is q21 in component IKr (dimensionless).
- * CONSTANTS[A31] is A31 in component IKr (per_millisecond).
- * CONSTANTS[B31] is B31 in component IKr (per_millivolt).
- * CONSTANTS[q31] is q31 in component IKr (dimensionless).
- * CONSTANTS[A41] is A41 in component IKr (per_millisecond).
- * CONSTANTS[B41] is B41 in component IKr (per_millivolt).
- * CONSTANTS[q41] is q41 in component IKr (dimensionless).
- * CONSTANTS[A51] is A51 in component IKr (per_millisecond).
- * CONSTANTS[B51] is B51 in component IKr (per_millivolt).
- * CONSTANTS[q51] is q51 in component IKr (dimensionless).
- * CONSTANTS[A52] is A52 in component IKr (per_millisecond).
- * CONSTANTS[B52] is B52 in component IKr (per_millivolt).
- * CONSTANTS[q52] is q52 in component IKr (dimensionless).
- * CONSTANTS[A53] is A53 in component IKr (per_millisecond).
- * CONSTANTS[B53] is B53 in component IKr (per_millivolt).
- * CONSTANTS[q53] is q53 in component IKr (dimensionless).
- * CONSTANTS[A61] is A61 in component IKr (per_millisecond).
- * CONSTANTS[B61] is B61 in component IKr (per_millivolt).
- * CONSTANTS[q61] is q61 in component IKr (dimensionless).
- * CONSTANTS[A62] is A62 in component IKr (per_millisecond).
- * CONSTANTS[B62] is B62 in component IKr (per_millivolt).
- * CONSTANTS[q62] is q62 in component IKr (dimensionless).
- * CONSTANTS[A63] is A63 in component IKr (per_millisecond).
- * CONSTANTS[B63] is B63 in component IKr (per_millivolt).
- * CONSTANTS[q63] is q63 in component IKr (dimensionless).
- * CONSTANTS[Kmax] is Kmax in component IKr (dimensionless).
- * CONSTANTS[Ku] is Ku in component IKr (per_millisecond).
- * CONSTANTS[n] is n in component IKr (dimensionless).
- * CONSTANTS[halfmax] is halfmax in component IKr (dimensionless).
- * CONSTANTS[Kt] is Kt in component IKr (per_millisecond).
- * CONSTANTS[Vhalf] is Vhalf in component IKr (millivolt).
- * CONSTANTS[Temp] is Temp in component IKr (dimensionless).
+ * ALGEBRAIC[xrss] is xrss in component IKr (dimensionless).
+ * ALGEBRAIC[txrf] is txrf in component IKr (millisecond).
+ * ALGEBRAIC[txrs] is txrs in component IKr (millisecond).
+ * ALGEBRAIC[Axrf] is Axrf in component IKr (dimensionless).
+ * ALGEBRAIC[Axrs] is Axrs in component IKr (dimensionless).
+ * STATES[xrf] is xrf in component IKr (dimensionless).
+ * STATES[xrs] is xrs in component IKr (dimensionless).
+ * ALGEBRAIC[xr] is xr in component IKr (dimensionless).
+ * ALGEBRAIC[rkr] is rkr in component IKr (dimensionless).
  * CONSTANTS[GKs_b] is GKs_b in component IKs (milliS_per_microF).
  * CONSTANTS[GKs] is GKs in component IKs (milliS_per_microF).
  * ALGEBRAIC[xs1ss] is xs1ss in component IKs (dimensionless).
  * ALGEBRAIC[xs2ss] is xs2ss in component IKs (dimensionless).
  * ALGEBRAIC[txs1] is txs1 in component IKs (millisecond).
- * CONSTANTS[txs1_max] is txs1_max in component IKs (millisecond).
  * STATES[xs1] is xs1 in component IKs (dimensionless).
  * STATES[xs2] is xs2 in component IKs (dimensionless).
  * ALGEBRAIC[KsCa] is KsCa in component IKs (dimensionless).
@@ -440,15 +366,7 @@
  * CONSTANTS[GKb_b] is GKb_b in component IKb (milliS_per_microF).
  * CONSTANTS[GKb] is GKb in component IKb (milliS_per_microF).
  * CONSTANTS[PNab] is PNab in component INab (milliS_per_microF).
- * ALGEBRAIC[A_Nab] is A in component INab (microA_per_microF).
- * CONSTANTS[B_Nab] is B in component INab (per_millivolt).
- * CONSTANTS[v0_Nab] is v0 in component INab (millivolt).
- * ALGEBRAIC[U] is U in component INab (dimensionless).
  * CONSTANTS[PCab] is PCab in component ICab (milliS_per_microF).
- * ALGEBRAIC[A_Cab] is A in component ICab (microA_per_microF).
- * CONSTANTS[B_Cab] is B in component ICab (per_millivolt).
- * CONSTANTS[v0_Cab] is v0 in component ICab (millivolt).
- * ALGEBRAIC[U] is U in component ICab (dimensionless).
  * CONSTANTS[GpCa] is GpCa in component IpCa (milliS_per_microF).
  * CONSTANTS[KmCap] is KmCap in component IpCa (millimolar).
  * CONSTANTS[bt] is bt in component ryr (millisecond).
@@ -464,7 +382,6 @@
  * CONSTANTS[a_relp] is a_relp in component ryr (millisecond).
  * ALGEBRAIC[Jrel_inf_temp] is Jrel_inf_temp in component ryr (dimensionless).
  * ALGEBRAIC[fJrelp] is fJrelp in component ryr (dimensionless).
- * CONSTANTS[Jrel_scaling_factor] is Jrel_scaling_factor in component ryr (dimensionless).
  * ALGEBRAIC[tau_rel_temp] is tau_rel_temp in component ryr (millisecond).
  * ALGEBRAIC[tau_relp_temp] is tau_relp_temp in component ryr (millisecond).
  * CONSTANTS[upScale] is upScale in component SERCA (dimensionless).
@@ -472,8 +389,7 @@
  * ALGEBRAIC[Jupp] is Jupp in component SERCA (millimolar_per_millisecond).
  * ALGEBRAIC[fJupp] is fJupp in component SERCA (dimensionless).
  * ALGEBRAIC[Jleak] is Jleak in component SERCA (millimolar_per_millisecond).
- * CONSTANTS[Jup_b] is Jup_b in component SERCA (dimensionless).
- * RATES[V] is d/dt v in component membrane (millivolt).
+ * RATES[v] is d/dt v in component membrane (millivolt).
  * RATES[CaMKt] is d/dt CaMKt in component CaMK (millimolar).
  * RATES[nai] is d/dt nai in component intracellular_ions (millimolar).
  * RATES[nass] is d/dt nass in component intracellular_ions (millimolar).
@@ -507,16 +423,8 @@
  * RATES[ffp] is d/dt ffp in component ICaL (dimensionless).
  * RATES[fcafp] is d/dt fcafp in component ICaL (dimensionless).
  * RATES[nca] is d/dt nca in component ICaL (dimensionless).
- * RATES[IC1] is d/dt IC1 in component IKr (dimensionless).
- * RATES[IC2] is d/dt IC2 in component IKr (dimensionless).
- * RATES[C1] is d/dt C1 in component IKr (dimensionless).
- * RATES[C2] is d/dt C2 in component IKr (dimensionless).
- * RATES[O] is d/dt O in component IKr (dimensionless).
- * RATES[IO] is d/dt IO in component IKr (dimensionless).
- * RATES[IObound] is d/dt IObound in component IKr (dimensionless).
- * RATES[Obound] is d/dt Obound in component IKr (dimensionless).
- * RATES[Cbound] is d/dt Cbound in component IKr (dimensionless).
- * RATES[D] is d/dt D in component IKr (dimensionless).
+ * RATES[xrf] is d/dt xrf in component IKr (dimensionless).
+ * RATES[xrs] is d/dt xrs in component IKr (dimensionless).
  * RATES[xs1] is d/dt xs1 in component IKs (dimensionless).
  * RATES[xs2] is d/dt xs2 in component IKs (dimensionless).
  * RATES[xk1] is d/dt xk1 in component IK1 (dimensionless).
@@ -524,12 +432,14 @@
  * RATES[Jrelp] is d/dt Jrelp in component ryr (dimensionless).
  */
 
-
 Ohara_Rudy_2011::Ohara_Rudy_2011()
 {
-algebraic_size = 200;
-constants_size = 206;
-states_size = 50;
+// algebraic_size = 200;
+// constants_size = 206;
+// states_size = 50;
+algebraic_size = 198;
+constants_size = 139+2;
+states_size = 41 + 1;
 ALGEBRAIC = new double[algebraic_size];
 CONSTANTS = new double[constants_size];
 RATES = new double[states_size];
@@ -1005,52 +915,6 @@ void Ohara_Rudy_2011::solveEuler(double dt){
   }
 }
 
-void Ohara_Rudy_2011::gaussElimination(double *A, double *b, double *x, int N) {
-        // Using A as a flat array to represent an N x N matrix
-    for (int i = 0; i < N; i++) {
-        // Search for maximum in this column
-        double maxEl = fabs(A[i*N + i]);
-        int maxRow = i;
-        for (int k = i + 1; k < N; k++) {
-            if (fabs(A[k*N + i]) > maxEl) {
-                maxEl = fabs(A[k*N + i]);
-                maxRow = k;
-            }
-        }
-
-        // Swap maximum row with current row (column by column)
-        for (int k = i; k < N; k++) {
-            double tmp = A[maxRow*N + k];
-            A[maxRow*N + k] = A[i*N + k];
-            A[i*N + k] = tmp;
-        }
-        double tmp = b[maxRow];
-        b[maxRow] = b[i];
-        b[i] = tmp;
-
-        // Make all rows below this one 0 in current column
-        for (int k = i + 1; k < N; k++) {
-            double c = -A[k*N + i] / A[i*N + i];
-            for (int j = i; j < N; j++) {
-                if (i == j) {
-                    A[k*N + j] = 0;
-                } else {
-                    A[k*N + j] += c * A[i*N + j];
-                }
-            }
-            b[k] += c * b[i];
-        }
-    }
-
-    // Solve equation Ax=b for an upper triangular matrix A
-    for (int i = N - 1; i >= 0; i--) {
-        x[i] = b[i] / A[i*N + i];
-        for (int k = i - 1; k >= 0; k--) {
-            b[k] -= A[k*N + i] * x[i];
-        }
-    }
-}
-
 void Ohara_Rudy_2011::solveRK4(double TIME, double dt){
 	unsigned short idx;
 	double k1[49],k2[49],k3[49],k4[49];
@@ -1148,13 +1012,5 @@ CONSTANTS[GKr] *= 1.013;
 CONSTANTS[GK1] *= 1.698;
 CONSTANTS[PCa] *= 1.007;
 CONSTANTS[GNaL] *= 2.661;
-}
-void Ohara_Rudy_2011::mat_vec_multiply(double** a, double* x, double *result, int n) {
-    for (int i = 0; i < n; i++) {
-        result[i] = 0.0;
-        for (int j = 0; j < n; j++) {
-            result[i] += a[i][j] * x[j];
-        }
-    }
 }
 
