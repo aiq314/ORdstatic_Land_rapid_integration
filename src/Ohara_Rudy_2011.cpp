@@ -464,7 +464,7 @@ void Ohara_Rudy_2011::initConsts(double type)
   ___initConsts(type);
 }
 
-void Ohara_Rudy_2011::initConsts(double type, double conc, const double *hill, const double *herg)
+void Ohara_Rudy_2011::initConsts(double type, double conc, double *hill)
 {
   ___initConsts(type);
   std::cout << "Celltype: " << CONSTANTS[celltype] << std::endl;
@@ -915,6 +915,70 @@ void Ohara_Rudy_2011::solveEuler(double dt){
   }
 }
 
+void Ohara_Rudy_2011::solveAnalytical(double dt)
+{
+////==============
+////Exact solution
+////==============
+////INa
+  STATES[m] = ALGEBRAIC[mss] - (ALGEBRAIC[mss] - STATES[m]) * exp(-dt / ALGEBRAIC[tm]);
+  STATES[hf] = ALGEBRAIC[hss] - (ALGEBRAIC[hss] - STATES[hf]) * exp(-dt / ALGEBRAIC[thf]);
+  STATES[hs] = ALGEBRAIC[hss] - (ALGEBRAIC[hss] - STATES[hs]) * exp(-dt / ALGEBRAIC[ths]);
+  STATES[j] = ALGEBRAIC[jss] - (ALGEBRAIC[jss] - STATES[j]) * exp(-dt / ALGEBRAIC[tj]);
+  STATES[hsp] = ALGEBRAIC[hssp] - (ALGEBRAIC[hssp] - STATES[hsp]) * exp(-dt / ALGEBRAIC[thsp]);
+  STATES[jp] = ALGEBRAIC[jss] - (ALGEBRAIC[jss] - STATES[jp]) * exp(-dt / ALGEBRAIC[tjp]);
+  STATES[mL] = ALGEBRAIC[mLss] - (ALGEBRAIC[mLss] - STATES[mL]) * exp(-dt / ALGEBRAIC[tmL]);
+  STATES[hL] = ALGEBRAIC[hLss] - (ALGEBRAIC[hLss] - STATES[hL]) * exp(-dt / CONSTANTS[thL]);
+  STATES[hLp] = ALGEBRAIC[hLssp] - (ALGEBRAIC[hLssp] - STATES[hLp]) * exp(-dt / CONSTANTS[thLp]);
+////Ito
+  STATES[a] = ALGEBRAIC[ass] - (ALGEBRAIC[ass] - STATES[a]) * exp(-dt / ALGEBRAIC[ta]);
+  STATES[iF] = ALGEBRAIC[iss] - (ALGEBRAIC[iss] - STATES[iF]) * exp(-dt / ALGEBRAIC[tiF]);
+  STATES[iS] = ALGEBRAIC[iss] - (ALGEBRAIC[iss] - STATES[iS]) * exp(-dt / ALGEBRAIC[tiS]);
+  STATES[ap] = ALGEBRAIC[assp] - (ALGEBRAIC[assp] - STATES[ap]) * exp(-dt / ALGEBRAIC[ta]);
+  STATES[iFp] = ALGEBRAIC[iss] - (ALGEBRAIC[iss] - STATES[iFp]) * exp(-dt / ALGEBRAIC[tiFp]);
+  STATES[iSp] = ALGEBRAIC[iss] - (ALGEBRAIC[iss] - STATES[iSp]) * exp(-dt / ALGEBRAIC[tiSp]);
+////ICaL
+  STATES[d] = ALGEBRAIC[dss] - (ALGEBRAIC[dss] - STATES[d]) * exp(-dt / ALGEBRAIC[td]);
+  STATES[ff] = ALGEBRAIC[fss] - (ALGEBRAIC[fss] - STATES[ff]) * exp(-dt / ALGEBRAIC[tff]);
+  STATES[fs] = ALGEBRAIC[fss] - (ALGEBRAIC[fss] - STATES[fs]) * exp(-dt / ALGEBRAIC[tfs]);
+  STATES[fcaf] = ALGEBRAIC[fcass] - (ALGEBRAIC[fcass] - STATES[fcaf]) * exp(-dt / ALGEBRAIC[tfcaf]);
+  STATES[fcas] = ALGEBRAIC[fcass] - (ALGEBRAIC[fcass] - STATES[fcas]) * exp(-dt / ALGEBRAIC[tfcas]);
+  STATES[jca] = ALGEBRAIC[fcass] - (ALGEBRAIC[fcass] - STATES[jca]) * exp(- dt / CONSTANTS[tjca]);
+  STATES[ffp] = ALGEBRAIC[fss] - (ALGEBRAIC[fss] - STATES[ffp]) * exp(-dt / ALGEBRAIC[tffp]);
+  STATES[fcafp] = ALGEBRAIC[fcass] - (ALGEBRAIC[fcass] - STATES[fcafp]) * exp(-d / ALGEBRAIC[tfcafp]);
+  STATES[nca] = ALGEBRAIC[anca] * CONSTANTS[k2n] / ALGEBRAIC[km2n] -
+      (ALGEBRAIC[anca] * CONSTANTS[k2n] / ALGEBRAIC[km2n] - STATES[nca]) * exp(-ALGEBRAIC[km2n] * dt);
+////IKr
+  STATES[xrf] = ALGEBRAIC[xrss] - (ALGEBRAIC[xrss] - STATES[xrf]) * exp(-dt / ALGEBRAIC[txrf]);
+  STATES[xrs] = ALGEBRAIC[xrss] - (ALGEBRAIC[xrss] - STATES[xrs]) * exp(-dt / ALGEBRAIC[txrs]);
+////IKs
+  STATES[xs1] = ALGEBRAIC[xs1ss] - (ALGEBRAIC[xs1ss] - STATES[xs1]) * exp(-dt / ALGEBRAIC[txs1]);
+  STATES[xs2] = ALGEBRAIC[xs2ss] - (ALGEBRAIC[xs2ss] - STATES[xs2]) * exp(-dt / ALGEBRAIC[txs2]);
+////IK1
+  STATES[xk1] = ALGEBRAIC[xk1ss] - (ALGEBRAIC[xk1ss] - STATES[xk1]) * exp(-dt / ALGEBRAIC[txk1]);
+////RyR receptors
+  STATES[Jrelnp] = ALGEBRAIC[Jrel_inf] - (ALGEBRAIC[Jrel_inf] - STATES[Jrelnp]) * exp(-dt / ALGEBRAIC[tau_rel]);
+  STATES[Jrelp] = ALGEBRAIC[Jrel_infp] - (ALGEBRAIC[Jrel_infp] - STATES[Jrelp]) * exp(-dt / ALGEBRAIC[tau_relp]);
+////=============================
+////Approximated solution (Euler)
+////=============================
+////CaMK
+  STATES[CaMKt] = STATES[CaMKt] + RATES[CaMKt] * dt;
+////Membrane potential
+  STATES[v] = STATES[v] + RATES[v] * dt;
+////Ion Concentrations and Buffers
+  STATES[nai] = STATES[nai] + RATES[nai] * dt;
+  STATES[nass] = STATES[nass] + RATES[nass] * dt;
+  STATES[ki] = STATES[ki] + RATES[ki] * dt;
+  STATES[kss] = STATES[kss] + RATES[kss] * dt;
+  STATES[cai] = STATES[cai] + RATES[cai] * dt;
+  STATES[cass] = STATES[cass] + RATES[cass] * dt;
+  STATES[cansr] = STATES[cansr] + RATES[cansr] * dt;
+  STATES[cajsr] = STATES[cajsr] + RATES[cajsr] * dt;
+  //new
+  STATES[ca_trpn] = STATES[ca_trpn] + RATES[ca_trpn] * dt;
+}
+
 void Ohara_Rudy_2011::solveRK4(double TIME, double dt){
 	unsigned short idx;
 	double k1[49],k2[49],k3[49],k4[49];
@@ -945,13 +1009,7 @@ void Ohara_Rudy_2011::solveRK4(double TIME, double dt){
 double Ohara_Rudy_2011::set_time_step(double TIME,
                                               double time_point,
                                               double min_time_step,
-                                              double max_time_step,
-                                              double min_dV,
-                                              double max_dV,
-                                              double* CONSTANTS,
-                                              double* RATES,
-                                              double* STATES,
-                                              double* ALGEBRAIC) {
+                                              double max_time_step) {
 // double time_step = 0.005;
  double time_step = min_time_step;
  if (TIME <= time_point || (TIME - floor(TIME / CONSTANTS[BCL]) * CONSTANTS[BCL]) <= time_point) {
@@ -961,9 +1019,9 @@ double Ohara_Rudy_2011::set_time_step(double TIME,
   }
   else {
     //printf("TIME > time_point ms\n");
-    if (std::abs(RATES[v] * time_step) <= min_dV) {//Slow changes in V
+    if (std::abs(RATES[v] * time_step) <= 0.2) {//Slow changes in V
         //printf("dV/dt <= 0.2\n");
-        time_step = std::abs(max_dV / RATES[v]);
+        time_step = std::abs(0.8 / RATES[v]);
         //Make sure time_step is between min time step and max_time_step
         if (time_step < min_time_step) {
             time_step = min_time_step;
@@ -973,9 +1031,9 @@ double Ohara_Rudy_2011::set_time_step(double TIME,
         }
         //printf("TIME = %E, dV = %E, time_step = %E\n",TIME, RATES[V] * time_step, time_step);
     }
-    else if (std::abs(RATES[v] * time_step) >= max_dV) {//Fast changes in V
+    else if (std::abs(RATES[v] * time_step) >= 0.8) {//Fast changes in V
         //printf("dV/dt >= 0.8\n");
-        time_step = std::abs(min_dV / RATES[v]);
+        time_step = std::abs(0.2 / RATES[v]);
         //Make sure time_step is not less than 0.005
         if (time_step < min_time_step) {
             time_step = min_time_step;

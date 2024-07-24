@@ -12,13 +12,14 @@
 #include <time.h>
 
 int main(int argc, char* argv[]){
-  if (argc < 4) {
+  if (argc < 3) {
     std::cerr << "Usage: " << argv[0] << "<params.txt> <hill_data.csv> <herg_data.csv>" << std::endl;
     return 1;
   }
   // Load params
   simulation_params params = load_params(argv[1]);
   std::cout << "Running simulation with parameters:" << std::endl;
+  std::cout << "forward_euler_only : " << params.forward_euler_only << std::endl;
   std::cout << "celltype : " << params.celltype << std::endl;
   std::cout << "bcl (ms): " << params.bcl << std::endl;
   std::cout << "beats : " << params.beats << std::endl;
@@ -39,14 +40,9 @@ int main(int argc, char* argv[]){
   double max_dt = params.max_dt;
   // Load drug data
   hill_data hill = load_hill(argv[2]);
-  herg_data herg = load_herg(argv[3]);
   std::cout << "hill data:" << std::endl;
   for(int i = 0; i < 14; i++){
     std::cout << "Col " << i << ": " << hill.hill[i] << std::endl;
-  }
-  std::cout << "herg data:" << std::endl;
-  for(int i = 0; i < 6; i++){
-    std::cout << "Col " << i << ": " << herg.herg[i] << std::endl;
   }
   // Measure time
   clock_t start, end, start_total, end_total;
@@ -64,18 +60,18 @@ int main(int argc, char* argv[]){
     double conc = params.conc[conc_id];
     int cai_scaling = params.cai_scaling;
     int mech_jump = 0;
+    double ca_trpn_old = 0., ca_trpn_next = 0.;
     double cai_rates = 0.0;
     // Start of calculations
     int imax = int((t_max - next_write_time) / dtw) + 1;// + ((int(t_max) - int(next_write_time)) % int(dtw) == 0 ? 0 : 1);
     Cellmodel* p_elec;
     Cellmodel* p_mech;
-    Cellmodel* p_em;
     std::ofstream vmcheck, em_vmcheck;
     std:: ostringstream file_name;
     std::string vmcheck_name;
     start = clock();
     p_elec = new Ohara_Rudy_2011();
-    p_elec->initConsts(params.celltype,conc,hill.hill,herg.herg); // drug effects
+    p_elec->initConsts(params.celltype,conc,hill.hill); // drug effects
     p_elec->CONSTANTS[BCL] = params.bcl;
     p_mech = new Land_2016();
     p_mech->initConsts(false, false);
@@ -135,12 +131,23 @@ int main(int argc, char* argv[]){
                           p_elec->RATES,
                           p_elec->STATES,
                           p_elec->ALGEBRAIC);
-      // Solve CiPAORdv1
-      dt = max_dt;
+      // Solve ORdstatic
+      if (params.forward_euler_only == 1){
+        dt = max_dt;
+      } else {
+        dt = p_elec->set_time_step(t_curr,
+              time_point,
+              0.005,
+              max_dt);
+      }      
       if (t_curr + dt >= next_write_time){
         dt = next_write_time - t_curr;
       }
-      p_elec->solveEuler(dt);
+      if (params.forward_euler_only == 1){
+        p_elec->solveEuler(dt);
+      } else {
+        p_elec->solveAnalytical(dt);
+      }
       // Solve Land2016
       if (dt >= min_dt){
         dt_mech = min_dt;
@@ -151,9 +158,9 @@ int main(int argc, char* argv[]){
       if (dt > 0 && dt_mech > 0){
         mech_jump = static_cast<int>(std::ceil(dt/dt_mech));
         if (cai_scaling == 1){
-          cai_rates = p_elec->RATES[ca_trpn] * 1000.0;
+          cai_rates = p_elec->RATES[cai] * 1000.0;
         } else {
-          cai_rates = p_elec->RATES[ca_trpn];
+          cai_rates = p_elec->RATES[cai];
         }
         for (int i_jump = 0; i_jump < mech_jump; i_jump++){
           if (t_mech + dt_mech >= t_curr + dt){
@@ -212,7 +219,7 @@ int main(int argc, char* argv[]){
     em_vmcheck.close();
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    std::cout << "Simulation is successfully done\n";
+    std::cout << "Simulation with conc = " << conc << " is successfully done\n";
     std::cout << "Computational time: " << cpu_time_used << " seconds\n";
     delete p_elec;
     delete p_mech;

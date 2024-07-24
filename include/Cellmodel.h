@@ -51,16 +51,11 @@ public:
   virtual void solveEuler(double dt){}
   virtual void solveEuler(double dt, double t, double Cai_input){}
   // virtual void solveAnalytical( int forward_euler_only, double dt, double *CONSTANTS, double *RATES, double* STATES, double* ALGEBRAIC ) {};
+  virtual void solveAnalytical( double dt) {};
   virtual double set_time_step (double TIME,
                                        double time_point,
                                        double min_time_step,
-                                       double max_time_step,
-                                       double min_dV,
-                                       double max_dV,
-                                       double* CONSTANTS,
-                                       double* RATES,
-                                       double* STATES,
-                                       double* ALGEBRAIC) {};
+                                       double max_time_step) {};
   virtual void gaussElimination(double *A, double *b, double *x, int N){};
   virtual void solveRK4(double TIME, double dt) {};
   virtual void mat_vec_multiply(double** a, double* x, double *result, int n) {};
